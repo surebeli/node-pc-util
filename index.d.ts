@@ -32,5 +32,5 @@ export type PermissionType = 'not determined' | 'denied' | 'authorized' | 'restr
 
 export interface Window {
   title: String
-  id: String
+  id: Number
 }
