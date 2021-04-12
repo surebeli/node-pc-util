@@ -1,6 +1,6 @@
 {
   "targets": [{
-    "target_name": "pcutil",
+    "target_name": "permissions",
     "sources": [ ],
     "conditions": [
       ['OS=="mac"', {
@@ -10,7 +10,7 @@
         "xcode_settings": {
           "MACOSX_DEPLOYMENT_TARGET": "10.10",
           "OTHER_CPLUSPLUSFLAGS": ["-std=c++14", "-stdlib=libc++"],
-          "OTHER_LDFLAGS": ["-framework CoreBluetooth -framework CoreFoundation -framework CoreLocation -framework AppKit -framework Contacts -framework Photos -framework EventKit -framework AVFoundation"]
+          "OTHER_LDFLAGS": ["-framework CoreBluetooth -framework CoreFoundation -framework CoreLocation -framework AppKit -framework Speech -framework Contacts -framework Photos -framework EventKit -framework AVFoundation"]
         },
       }]
     ],

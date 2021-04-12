@@ -9,7 +9,9 @@
 #import <EventKit/EventKit.h>
 #import <Foundation/Foundation.h>
 #import <Photos/Photos.h>
+#ifdef AVAILABLE_MAC_OS_X_VERSION_10_15_AND_LATER
 #import <Speech/Speech.h>
+#endif
 #import <pwd.h>
 
 /***** HELPER FUNCTIONS *****/
@@ -118,6 +120,7 @@ std::string ContactAuthStatus() {
 
 // Returns a status indicating whether the user has authorized Bluetooth access.
 std::string BluetoothAuthStatus() {
+#ifdef AVAILABLE_MAC_OS_X_VERSION_10_15_AND_LATER
   if (@available(macOS 10.15, *)) {
     switch ([CBCentralManager authorization]) {
     case CBManagerAuthorizationAllowedAlways:
@@ -130,7 +133,7 @@ std::string BluetoothAuthStatus() {
       return kNotDetermined;
     }
   }
-
+#endif
   return kAuthorized;
 }
 
@@ -250,6 +253,7 @@ std::string MediaAuthStatus(const std::string &type) {
 // Returns a status indicating whether the user has authorized speech
 // recognition access.
 std::string SpeechRecognitionAuthStatus() {
+#ifdef AVAILABLE_MAC_OS_X_VERSION_10_15_AND_LATER
   if (@available(macOS 10.15, *)) {
     switch ([SFSpeechRecognizer authorizationStatus]) {
     case SFSpeechRecognizerAuthorizationStatusAuthorized:
@@ -262,7 +266,7 @@ std::string SpeechRecognitionAuthStatus() {
       return kNotDetermined;
     }
   }
-
+#endif
   return kAuthorized;
 }
 
@@ -504,6 +508,7 @@ Napi::Promise AskForSpeechRecognitionAccess(const Napi::CallbackInfo &info) {
     std::string auth_status = SpeechRecognitionAuthStatus();
 
     if (auth_status == kNotDetermined) {
+#ifdef AVAILABLE_MAC_OS_X_VERSION_10_15_AND_LATER
       __block Napi::ThreadSafeFunction tsfn = ts_fn;
       [SFSpeechRecognizer
           requestAuthorization:^(SFSpeechRecognizerAuthorizationStatus status) {
@@ -518,6 +523,10 @@ Napi::Promise AskForSpeechRecognitionAccess(const Napi::CallbackInfo &info) {
                 callback);
             tsfn.Release();
           }];
+#else
+      ts_fn.Release();
+      deferred.Resolve(Napi::String::New(env, auth_status));
+#endif
     } else if (auth_status == kDenied) {
       NSWorkspace *workspace = [[NSWorkspace alloc] init];
       NSString *pref_string = @"x-apple.systempreferences:com.apple.preference."
