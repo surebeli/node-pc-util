@@ -675,6 +675,110 @@ void AskForAccessibilityAccess(const Napi::CallbackInfo &info) {
   }
 }
 
+static char *MYCFStringCopyUTF8String(CFStringRef aString) {
+  if (aString == NULL) {
+    return NULL;
+  }
+
+  CFIndex length = CFStringGetLength(aString);
+  CFIndex maxSize =
+      CFStringGetMaximumSizeForEncoding(length, kCFStringEncodingUTF8) + 1;
+  char *buffer = (char *)malloc(maxSize);
+  if (CFStringGetCString(aString, buffer, maxSize, kCFStringEncodingUTF8)) {
+    return buffer;
+  }
+  free(buffer); // If we failed
+  return NULL;
+}
+
+Napi::Array enumerateWindows(const Napi::CallbackInfo &info) {
+  Napi::Env env = info.Env();
+  Napi::Array ar = Napi::Array::New(env);
+  CFArrayRef window_array = CGWindowListCopyWindowInfo(
+      kCGWindowListOptionOnScreenOnly | kCGWindowListExcludeDesktopElements,
+      kCGNullWindowID);
+  if (window_array) {
+    CFIndex count = CFArrayGetCount(window_array);
+    int index = 0;
+    for (CFIndex i = 0; i < count; ++i) {
+
+      CFDictionaryRef window = reinterpret_cast<CFDictionaryRef>(
+          CFArrayGetValueAtIndex(window_array, i));
+      if (!window) {
+        continue;
+      }
+
+      CFBooleanRef on_screen = reinterpret_cast<CFBooleanRef>(
+          CFDictionaryGetValue(window, kCGWindowIsOnscreen));
+      if (on_screen == NULL || !CFBooleanGetValue(on_screen)) {
+        continue;
+      }
+
+      CFNumberRef window_id = reinterpret_cast<CFNumberRef>(
+          CFDictionaryGetValue(window, kCGWindowNumber));
+      if (!window_id) {
+        continue;
+      }
+
+      CFStringRef window_title = reinterpret_cast<CFStringRef>(
+          CFDictionaryGetValue(window, kCGWindowName));
+
+      if (!window_title) {
+        continue;
+      }
+
+      on_screen = reinterpret_cast<CFBooleanRef>(
+          CFDictionaryGetValue(window, kCGWindowIsOnscreen));
+      if (on_screen == NULL || !CFBooleanGetValue(on_screen)) {
+        continue;
+      }
+
+      CFNumberRef window_layer = reinterpret_cast<CFNumberRef>(
+          CFDictionaryGetValue(window, kCGWindowLayer));
+      if (!window_layer) {
+        continue;
+      }
+
+      // Skip windows with layer!=0 (menu, dock).
+      int layer;
+      if (!CFNumberGetValue(window_layer, kCFNumberIntType, &layer)) {
+        continue;
+      }
+      if (layer != 0) {
+        continue;
+      }
+
+      NSNumber *windowId = (__bridge NSNumber *)window_id;
+      Napi::Object obj = Napi::Object::New(env);
+      obj.Set("title", MYCFStringCopyUTF8String(window_title));
+      int title = [windowId intValue];
+      obj.Set("id", title);
+      ar[index++] = obj;
+      // [array addObject:windowId];
+    }
+  }
+  CFRelease(window_array);
+  // std::string testRet = "12345";
+  // return Napi::Value::From(env, testRet);
+  return ar;
+}
+
+Napi::Array enumerateDisplay(const Napi::CallbackInfo &info) {
+  Napi::Env env = info.Env();
+  Napi::Array arr = Napi::Array::New(env);
+  NSArray<NSScreen *> *screens = [NSScreen screens];
+  int index = 0;
+  for (NSScreen *screen in screens) {
+    NSDictionary *deviceDescription = [screen deviceDescription];
+    id screenNumber = [deviceDescription objectForKey:@"NSScreenNumber"];
+
+    NSString *displayID = [NSString stringWithFormat:@"%@", screenNumber];
+    std::string did = [displayID UTF8String];
+    arr[index++] = Napi::String::New(env, did);
+  }
+  return arr;
+}
+
 // Initializes all functions exposed to JS
 Napi::Object Init(Napi::Env env, Napi::Object exports) {
   exports.Set(Napi::String::New(env, "getAuthStatus"),
@@ -701,8 +805,12 @@ Napi::Object Init(Napi::Env env, Napi::Object exports) {
               Napi::Function::New(env, AskForScreenCaptureAccess));
   exports.Set(Napi::String::New(env, "askForAccessibilityAccess"),
               Napi::Function::New(env, AskForAccessibilityAccess));
+  exports.Set(Napi::String::New(env, "enumerateWindows"),
+              Napi::Function::New(env, enumerateWindows));
+  exports.Set(Napi::String::New(env, "enumerateDisplay"),
+              Napi::Function::New(env, enumerateDisplay));
 
   return exports;
 }
 
-NODE_API_MODULE(permissions, Init)
+NODE_API_MODULE(pcutil, Init)

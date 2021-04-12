@@ -1,11 +1,11 @@
 {
   "targets": [{
-    "target_name": "permissions",
+    "target_name": "pcutil",
     "sources": [ ],
     "conditions": [
       ['OS=="mac"', {
         "sources": [
-          "permissions.mm"
+          "pcutil.mm"
         ],
         "xcode_settings": {
           "MACOSX_DEPLOYMENT_TARGET": "10.10",

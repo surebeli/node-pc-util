@@ -1,5 +1,5 @@
-// Type definitions for node-mac-permissions
-// Project: node-mac-permissions
+// Type definitions for pcutil
+// Project: pcutil
 
 export function askForCalendarAccess(): Promise<'authorized' | 'denied'>
 export function askForContactsAccess(): Promise<'authorized' | 'denied'>
@@ -13,7 +13,8 @@ export function askForSpeechRecognitionAccess(): Promise<'authorized' | 'denied'
 export function askForScreenCaptureAccess(): undefined
 export function askForAccessibilityAccess(): undefined
 export function getAuthStatus(authType: AuthType): PermissionType
-
+export function enumerateWindows(): Array<Window>
+export function enumerateDisplay(): Array<String>
 export type AuthType =
   | 'contacts'
   | 'calendar'
@@ -28,3 +29,8 @@ export type AuthType =
   | 'screen'
 
 export type PermissionType = 'not determined' | 'denied' | 'authorized' | 'restricted'
+
+export interface Window {
+  title: String
+  id: String
+}

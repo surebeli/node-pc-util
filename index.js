@@ -1,4 +1,4 @@
-const permissions = require('bindings')('permissions.node')
+const pcutil = require('bindings')('pcutil.node')
 
 function getAuthStatus(type) {
   const validTypes = [
@@ -20,7 +20,7 @@ function getAuthStatus(type) {
     throw new TypeError(`${type} is not a valid type`)
   }
 
-  return permissions.getAuthStatus.call(this, type)
+  return pcutil.getAuthStatus.call(this, type)
 }
 
 function askForFoldersAccess(folder) {
@@ -30,20 +30,22 @@ function askForFoldersAccess(folder) {
     throw new TypeError(`${folder} is not a valid protected folder`)
   }
 
-  return permissions.askForFoldersAccess.call(this, folder)
+  return pcutil.askForFoldersAccess.call(this, folder)
 }
 
 module.exports = {
-  askForCalendarAccess: permissions.askForCalendarAccess,
-  askForContactsAccess: permissions.askForContactsAccess,
+  askForCalendarAccess: pcutil.askForCalendarAccess,
+  askForContactsAccess: pcutil.askForContactsAccess,
   askForFoldersAccess,
-  askForFullDiskAccess: permissions.askForFullDiskAccess,
-  askForRemindersAccess: permissions.askForRemindersAccess,
-  askForCameraAccess: permissions.askForCameraAccess,
-  askForMicrophoneAccess: permissions.askForMicrophoneAccess,
-  askForPhotosAccess: permissions.askForPhotosAccess,
-  askForSpeechRecognitionAccess: permissions.askForSpeechRecognitionAccess,
-  askForScreenCaptureAccess: permissions.askForScreenCaptureAccess,
-  askForAccessibilityAccess: permissions.askForAccessibilityAccess,
+  askForFullDiskAccess: pcutil.askForFullDiskAccess,
+  askForRemindersAccess: pcutil.askForRemindersAccess,
+  askForCameraAccess: pcutil.askForCameraAccess,
+  askForMicrophoneAccess: pcutil.askForMicrophoneAccess,
+  askForPhotosAccess: pcutil.askForPhotosAccess,
+  askForSpeechRecognitionAccess: pcutil.askForSpeechRecognitionAccess,
+  askForScreenCaptureAccess: pcutil.askForScreenCaptureAccess,
+  askForAccessibilityAccess: pcutil.askForAccessibilityAccess,
   getAuthStatus,
+  enumerateWindows: pcutil.enumerateWindows,
+  enumerateDisplay: pcutil.enumerateDisplay,
 }
