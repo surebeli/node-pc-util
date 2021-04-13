@@ -1,4 +1,4 @@
-const pcutil = require('bindings')('pcutil.node')
+const pcutil = require('bindings')('pc-util.node')
 
 function getAuthStatus(type) {
   const validTypes = [

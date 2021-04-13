@@ -1,6 +1,6 @@
 {
   "targets": [{
-    "target_name": "pcutil",
+    "target_name": "pc-util",
     "sources": [ ],
     "conditions": [
       ['OS=="mac"', {
