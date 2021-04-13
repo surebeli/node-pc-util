@@ -1,10 +1,10 @@
 [![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://lbesson.mit-license.org/)
- [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com) [![Actions Status](https://github.com/codebytere/node-mac-permissions/workflows/Test/badge.svg)](https://github.com/codebytere/node-mac-permissions/actions)
+ [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com) [![Actions Status](https://github.com/surebeli/node-pc-util/workflows/Test/badge.svg)](https://github.com/surebeli/node-pc-util/actions)
 
-# node-mac-permissions
+# node-pc-util
 
 ```js
-$ npm i node-mac-permissions
+$ npm i node-pc-util
 ```
 
 This native Node.js module allows you to manage an app's access to:
